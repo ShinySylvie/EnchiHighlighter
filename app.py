@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
@@ -11,9 +11,13 @@ SyntaxBank = {
   
 }
 
-@app.route('/syntax')
+@app.route('/bank')
 def get_Bank():
     return jsonify(SyntaxBank)
+
+@app.route("/syntax")
+def display():
+    return render_template("SyntaxHighlighter.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
