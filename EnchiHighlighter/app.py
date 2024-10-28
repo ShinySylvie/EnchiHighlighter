@@ -20,7 +20,7 @@ def is_number(word):
 
 #Add 'word' to SyntaxBank if it's not already there
 def add_to_litfun(word):
-    if word not in SyntaxBank['litfun']:
+    if word not in SyntaxBank['litfun']:  # Check for duplicates
         SyntaxBank['litfun'].append(word)
 
 #                               *** _____Routing Section____***
