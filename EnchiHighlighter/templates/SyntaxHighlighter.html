@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Syntax Highlighter</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        body {
+            background-color: rgb(39, 39, 39);  
+            margin: 0px;
+            padding: 0px;      
+        }
+
+        .mainarea {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #editor {
+            height: 80%;
+            width: 75%;
+            border: 2px solid rgb(0, 0, 0);
+            overflow-y: auto;
+            padding: 5px;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            color: rgb(255, 255, 255);
+            background-color: rgb(58, 58, 58);
+            outline: none;
+        }
+
+        #editor:focus {
+            border-color: rgb(0, 0, 0);
+        }
+
+        #header {
+            background-color: rgb(175, 177, 58);
+            width: 100%;  
+            min-height: 100px;
+            max-height: 250px;
+        }
+
+        #status {
+            color: white;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header" class="cell small-12 medium-12 large-12 text-right">
+        <h1 style="text-align: center; margin:0px;">Enchi Highlighter</h1>
+    </div>
+
+    <div class="mainarea">
+        <div id="editor" contenteditable="true"></div>
+    </div>
+
+    <div id="status">No word captured yet.</div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            const editor = document.getElementById('editor');
+
+            //Tab Mechchanic
+            editor.addEventListener("keydown", function(event) {
+                if (event.key === "Tab") {
+                    event.preventDefault(); 
+
+                    const tab = "\u00a0\u00a0\u00a0\u00a0";
+                    const selection = window.getSelection();
+                    const range = selection.getRangeAt(0);
+
+                 
+                    const tabNode = document.createTextNode(tab);
+                    range.insertNode(tabNode);
+
+                
+                    range.setStartAfter(tabNode);
+                    range.setEndAfter(tabNode);
+
+        
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            });
+
+            // When User presses Tab, Enter, or Space, previous letters are sent to backend
+            editor.addEventListener('keydown', function(event) {
+                
+                if (event.key === ' ' || event.key === 'Enter' || event.key === 'Tab') {
+                    console.log("Keydown event detected");
+
+                    const textContent = editor.innerText;  
+                    const words = textContent.trim().split(/\s+/); 
+                    const lastWord = words[words.length - 1];
+                    if (lastWord) {
+                        console.log("Last word captured:", lastWord);
+                        sendWordToBackend(lastWord);
+                        document.getElementById('status').innerText = `Captured word: ${lastWord}`; 
+                    }
+                }
+            });
+        });
+
+        function sendWordToBackend(word) {
+            console.log("Sending word to backend:", word);
+            fetch('/process_word', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ word: word })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Processed data:', data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
+
