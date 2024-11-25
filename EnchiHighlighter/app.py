@@ -3,7 +3,7 @@ from flask import Flask,request,render_template,jsonify
 app = Flask(__name__)
 
 SyntaxBank = {
-    "operators": ["+", "-", "*", "/", "="],
+    "operators": ["+", "-", "*", "/", "=", "<", ">", "(", ")", "{", "}", "++", "--"],
     "keywords" : ["for","while","if", "else","elif", "in"],
     "litfun" : ["int", "print", "float", "range", "len", "string", "bool","dict",
                 "str","list","set", "tuple", "bytes","sum", "round", "sorted","chr",
@@ -57,14 +57,17 @@ def process_word():
             return jsonify({
                 'message': f"Found word: '{word}' in category: {found_in_category}",
                 'word': word,
-                'is_found': True
+                'is_found': True,
+                'category': found_in_category
+                
         
             }), 200
         else:
             return jsonify({
                 'message': f"Word '{word}' not found in any category",
                 'word': word,
-                'is_found': False
+                'is_found': False,
+                'category': None  # No category
                 }),200   
     else:
        
